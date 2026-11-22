@@ -23,5 +23,8 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 - AMF가 gNB에 보내는 "Registration Accept"는 어떤 NGAP 메시지에 실려 가는가?
  ->Initial Context Setup Request 메시지에 실려 갑니다.그리고 Registration Accept는 단말(UE)과 코어(AMF)만 해석하는 NAS 메시지이므로, AMF가 기지국(gNB)에게 단말의 무선 자원 및 보안 키 설정(Context 생성)을 지시하는 N2 전용 메시지(Initial Context Setup Request) 안에 단말용 Registration Accept를 캡슐화해 함께 전달합니다.
 
-### 결과 (캡처 후)
-(캡처 후 채움)
+### 결과 
+- 1~5번 예측 순서가 일치했다 (등록 요청 → 인증 → 보안 모드)
+- Registration Accept는 InitialContextSetupRequest(NGAP)에 실려 간다
+- 예측에 없던 것: UEContextRelease가 보안 모드 직후에 나온다 (원인은 확인 중)
+- 등록 직후 PDU 세션 요청이 이어지고, 마지막에 PDUSessionResourceSetup 요청/응답이 나온다
