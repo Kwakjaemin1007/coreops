@@ -65,9 +65,6 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 ## 3. 해제 (Deregistration)
 
 ### 예측
-## 3. 해제 (Deregistration)
-
-### 예측
 1. **UE → AMF:** `Deregistration request` (단말이 gNB를 거쳐 코어 정문 AMF에 5G 접속 해제 요청 전달)
 2. **AMF → SMF / gNB:**
    - **AMF → SMF:** 활성화된 데이터 세션(`PDU Session`) 해제 요청 → SMF가 `N4`를 통해 UPF에 전달 규칙(`PDR/FAR`) 삭제 지시
