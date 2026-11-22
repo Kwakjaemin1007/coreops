@@ -118,5 +118,8 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 - `docker compose down`으로 끈 UE는 해제 메시지 없이 종료되어, 코어에 해제 흔적이 남지 않았다 (SCTP/PFCP는 Heartbeat만 있었다)
 - 정상 해제는 `nr-cli <imsi> --exec "deregister normal"`로 일으킨다
 
-**남은 확인**
-- SMF↔UPF 세션 해제 (PFCP Session Deletion), AMF↔SMF (http2)
+**N4 확인 (PFCP)**
+- SMF→UPF PFCP Session Deletion Request (No.263), UPF의 Response (No.265)가 UEContextReleaseCommand (No.435)보다 먼저 나온다
+- 순서: UE 해제 요청 → 세션 삭제(N4) → gNB 컨텍스트 해제
+- 이전 `compose down` 캡처에는 Session Deletion이 없었다
+- 남은 확인: AMF↔SMF 구간(http2)
