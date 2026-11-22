@@ -101,4 +101,22 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 - compose down은 컨테이너에 종료 신호를 보낼 뿐이라, UE가 Deregistration request를 보낸다는 보장이 없다. 보내지 않으면 코어가 타이머 만료로 정리할 수도 있다.
 
 ### 결과 (캡처 결과)
-(해제 캡처 후 작성)
+캡처: UERANSIM `nr-cli`의 `deregister normal` 실행 (dereg-normal.pcap)
+
+**확인된 것 (패킷에서 직접 확인)**
+- gNB→AMF UplinkNASTransport (No.249) 후, AMF→gNB DownlinkNASTransport (No.433)가 나온다
+- AMF→gNB UEContextReleaseCommand (No.435), Cause: Nas=deregister
+- gNB→AMF UEContextReleaseComplete (No.441)
+- 예측 2~3번(Release Command → Release Complete)과 일치했다
+- 해제 후 UE가 자동으로 다시 등록한다 (No.507~)
+
+**추정 (패킷만으로 확인 불가)**
+- 249번은 Deregistration request, 433번은 Deregistration accept로 보인다. 등록 때 Security Mode 이후의 NAS 메시지는 암호화되어 Wireshark가 메시지 종류를 풀지 못한다
+- 따라서 "accept가 Release Command보다 앞"은 순서상 그렇게 보일 뿐 단정하지 않는다
+
+**배운 것**
+- `docker compose down`으로 끈 UE는 해제 메시지 없이 종료되어, 코어에 해제 흔적이 남지 않았다 (SCTP/PFCP는 Heartbeat만 있었다)
+- 정상 해제는 `nr-cli <imsi> --exec "deregister normal"`로 일으킨다
+
+**남은 확인**
+- SMF↔UPF 세션 해제 (PFCP Session Deletion), AMF↔SMF (http2)
