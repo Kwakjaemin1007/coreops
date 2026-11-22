@@ -75,3 +75,14 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 3. **gNB / SMF → AMF:**
    - **gNB → AMF:** `UE Context Release Complete` (기지국이 단말 자원 정리를 마쳤음을 확인 보고)
    - **SMF → AMF:** 세션 해제 완료 응답 전달 *(전원 끄기 외 일반 해제의 경우 AMF → UE `Deregistration accept` 흐름도 함께 확인)*
+### 확인할 것 
+- Deregistration accept가 Release Command 앞인가, 뒤인가, 아예 없는가
+- AMF→SMF 세션 해제는 http2 필터에서 어떻게 보이는가
+- UE를 compose down으로 끈 경우 정상 해제 흐름이 맞게 나오는가
+
+- **Deregistration accept가 Release Command 앞인가, 뒤인가, 아예 없는가**
+  - 일반 해제(`Normal deregistration`)에서는 보통 **`Deregistration accept`가 `UEContextReleaseCommand`보다 앞**에 나오고, 단말 전원 끄기(`Switch off`) 유형이면 **아예 없는 경우**도 있다. Wireshark(`nas-5gs || ngap`)에서 프레임 번호(`No.`) 순서로 직접 확인함.
+- **AMF→SMF 세션 해제는 http2 필터에서 어떻게 보이는가**
+  - `http2` 필터에서 `AMF`와 `SMF` IP 간 세션 관리 서비스(`nsmf-pdusession` 계열 경로의 해제 요청과 `200 OK` / `204 No Content` 응답)로 보임. `SMF`는 이를 바탕으로 `N4`를 통해 `UPF` 규칙을 삭제함.
+- **UE를 compose down으로 끈 경우 정상 해제 흐름이 맞게 나오는가**
+  - `compose down`으로 프로세스가 정상 종료 신호를 받고 내려가면 `Deregistration request` $\rightarrow$ 세션/문맥 정리 $\rightarrow$ `UEContextReleaseCommand` / `Complete` 흐름이 잡힘. 강제 종료(`docker kill`)처럼 신호 없이 끊기면 `Deregistration request`가 빠지거나 원인 코드가 달라질 수 있음.
