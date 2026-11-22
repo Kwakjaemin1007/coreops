@@ -123,3 +123,10 @@ UE가 처음 켜졌을 때 메시지가 오가는 순서를 적는다.
 - 순서: UE 해제 요청 → 세션 삭제(N4) → gNB 컨텍스트 해제
 - 이전 `compose down` 캡처에는 Session Deletion이 없었다
 - 남은 확인: AMF↔SMF 구간(http2)
+
+**AMF↔SMF 확인 (HTTP/2, 포트 7777을 Decode As로 HTTP2 지정)**
+- AMF→SMF: POST /nsmf-pdusession/v1/sm-contexts/4/release (No.251)
+- SMF→PCF: POST /npcf-smpolicycontrol/v1/sm-policies/4/delete (No.267)
+- 모든 NF 통신은 SCP(172.22.0.35)를 거친다 (AMF→SCP, SCP→SMF로 두 번 보임)
+- 최종 순서: UE 해제 요청 → AMF→SMF release → SMF→UPF PFCP 삭제 + SMF→PCF 정책 삭제 → AMF→gNB UEContextRelease
+- 예측에 없던 것: 정책(PCF) 삭제, SCP 중계
